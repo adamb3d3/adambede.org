@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Stonecutter — Parallax</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Confidential investor briefing — the compounding-then-inflection pattern behind long-horizon investment.">
+<style>
+  :root{
+    --navy:#1B2A4A; --red:#E63946; --cream:#F7F3EF; --steel:#3D5A80;
+    --ink:#1B2A4A; --ink-2:#4a5a76; --muted:#8a93a6;
+    --card:#fffdfa; --line:#e3dcd2; --hair:rgba(27,42,74,0.10);
+    --wedge:rgba(61,90,128,0.16); --shadow:0 1px 2px rgba(27,42,74,0.06), 0 8px 30px rgba(27,42,74,0.05);
+    --display:Georgia,"Times New Roman",serif;
+    --body:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0; background:var(--cream); color:var(--ink);
+    font-family:var(--body); font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px; margin:0 auto; padding:0 24px}
+  .lbl{font-size:11px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--muted)}
+  .num{font-variant-numeric:tabular-nums}
+  a{color:var(--steel)}
+  button{font-family:inherit}
+  :focus-visible{outline:2.5px solid var(--red); outline-offset:2px; border-radius:3px}
+
+  /* masthead */
+  .masthead{display:flex; justify-content:space-between; align-items:baseline; gap:14px; flex-wrap:wrap;
+    border-bottom:1.5px solid var(--navy); margin-top:30px; padding-bottom:10px}
+  .masthead .brand{font-weight:800; letter-spacing:.22em; font-size:13px; text-transform:uppercase}
+  .conf{font-size:10.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--red);
+    border:1px solid var(--red); padding:3px 8px; border-radius:2px; background:rgba(230,57,70,0.06)}
+
+  /* title */
+  .hero{margin:44px 0 26px}
+  .hero .kick{color:var(--red); margin-bottom:16px}
+  h1{font-family:var(--display); font-weight:700; font-size:clamp(44px,8.5vw,80px); line-height:0.98;
+    letter-spacing:-0.02em; margin:0}
+  .quote{font-family:var(--display); font-style:italic; font-size:clamp(17px,2.1vw,20px); line-height:1.5;
+    color:var(--ink-2); border-top:1px solid var(--line); margin-top:26px; padding-top:20px; max-width:760px}
+  .quote .attr{display:block; margin-top:12px; font-style:normal; font-family:var(--body); font-size:14px; color:var(--muted)}
+  .quote .attr::before{content:"— "}
+  .intro{max-width:760px; margin:22px 0 0; font-size:17.5px}
+  .intro b{color:var(--navy)}
+
+  /* objection chips */
+  .filterbar{margin:34px 0 8px}
+  .filterbar .cap{margin-bottom:11px}
+  .chips{display:flex; flex-wrap:wrap; gap:9px}
+  .chip{border:1px solid var(--hair); background:var(--card); color:var(--ink-2); border-radius:100px;
+    padding:8px 15px; font-size:13.5px; font-weight:600; cursor:pointer; transition:all .15s; line-height:1}
+  .chip:hover{border-color:var(--steel); color:var(--navy)}
+  .chip[aria-pressed="true"]{background:var(--navy); color:#fff; border-color:var(--navy)}
+  .chip .ct{opacity:.6; font-variant-numeric:tabular-nums; margin-left:6px}
+
+  /* stage */
+  .stage{background:var(--card); border:1px solid var(--hair); border-radius:10px; box-shadow:var(--shadow);
+    margin-top:18px; padding:26px 28px 24px; position:relative; overflow:hidden}
+  .casemeta{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px}
+  .tierpill{font-size:10.5px; font-weight:800; letter-spacing:.13em; text-transform:uppercase;
+    padding:3px 9px; border-radius:100px; color:#fff; background:var(--steel)}
+  .tierpill[data-tier="Technology"]{background:#2f6fb0}
+  .tierpill[data-tier="Movements & Law"]{background:#6a5aa0}
+  .tierpill[data-tier="Science"]{background:#1f8a70}
+  .tierpill[data-tier="Markets"]{background:#c06a2b}
+  .casemeta .dom{font-size:12.5px; color:var(--muted); font-weight:600; letter-spacing:.02em}
+  .casemeta .badge{margin-left:auto; font-size:10.5px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--navy); border:1px solid var(--hair); padding:3px 8px; border-radius:100px; display:inline-flex; gap:5px; align-items:center}
+  .casemeta .badge .d{color:var(--red)}
+  .casemeta .cnt{font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; font-weight:700}
+
+  h2.title{font-family:var(--display); font-weight:700; font-size:clamp(26px,3.6vw,36px); line-height:1.08;
+    margin:0 0 6px; letter-spacing:-0.01em}
+  .headline{font-size:18px; color:var(--ink-2); margin:0 0 18px; max-width:820px}
+  .headline em{color:var(--red); font-style:normal; font-weight:600}
+
+  /* chart */
+  .chartbox{margin:6px 0 4px}
+  svg.chart{display:block; width:100%; height:auto; overflow:visible}
+  .axline{stroke:var(--line); stroke-width:1}
+  .axgrid{stroke:var(--line); stroke-width:1; stroke-dasharray:2 4; opacity:.7}
+  .axtxt{font-family:var(--body); font-size:11px; fill:var(--muted)}
+  .axtitle{font-family:var(--body); font-size:11px; font-weight:700; fill:var(--muted); letter-spacing:.04em}
+  .curve{fill:none; stroke-width:2.6; stroke-linejoin:round; stroke-linecap:round}
+  .curve.inv{stroke:var(--steel)}
+  .curve.vis{stroke:var(--navy)}
+  .wedgefill{fill:var(--wedge)}
+  .wedgelbl{font-family:var(--body); font-size:10.5px; font-weight:800; letter-spacing:.13em; text-transform:uppercase; fill:var(--steel); opacity:.9}
+  .pcline{stroke:var(--red); stroke-width:1.6; stroke-dasharray:4 4}
+  .pctxt{font-family:var(--body); font-size:10.5px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; fill:var(--red)}
+  .curvelbl{font-family:var(--body); font-size:12px; font-weight:700}
+  .curvelbl.inv{fill:var(--steel)} .curvelbl.vis{fill:var(--navy)}
+  .evt{cursor:pointer}
+  .evt circle.dot{stroke:#fff; stroke-width:2; transition:r .12s}
+  .evt:hover circle.dot,.evt:focus circle.dot{r:8}
+  .evt circle.hit{fill:transparent}
+  .evtyr{font-family:var(--body); font-size:10px; font-weight:700; fill:var(--muted); font-variant-numeric:tabular-nums}
+
+  .legend{display:flex; flex-wrap:wrap; gap:8px 20px; margin:14px 2px 2px; padding-top:14px; border-top:1px solid var(--line)}
+  .lg{display:inline-flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-2); font-weight:600}
+  .lg .sw{width:16px; height:3px; border-radius:2px}
+  .lg .sw.dash{height:0; border-top:2px dashed var(--red)}
+  .lg .sw.box{width:15px; height:11px; border-radius:2px; background:var(--wedge); border:1px solid rgba(61,90,128,0.3)}
+
+  /* takeaway / data / caveat */
+  .takeaway{font-family:var(--display); font-size:19px; line-height:1.5; color:var(--navy); margin:22px 0 0;
+    padding-left:16px; border-left:3px solid var(--red)}
+  .datanote{margin:18px 0 0; background:rgba(61,90,128,0.06); border:1px solid var(--hair); border-radius:7px; padding:14px 16px}
+  .datanote .k{font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--steel); display:flex; align-items:center; gap:6px; margin-bottom:6px}
+  .datanote .k .d{color:var(--red)}
+  .datanote p{margin:0; font-size:13.5px; color:var(--ink-2); font-variant-numeric:tabular-nums}
+  .caveat{margin:16px 0 0; font-size:13px; line-height:1.5; color:var(--muted); display:flex; gap:9px}
+  .caveat .k{font-weight:800; color:var(--red); flex:none; letter-spacing:.02em}
+
+  /* pager */
+  .pager{display:flex; align-items:center; gap:14px; margin:22px 0 4px; justify-content:space-between}
+  .pbtn{border:1px solid var(--hair); background:var(--card); color:var(--navy); border-radius:8px;
+    width:44px; height:40px; font-size:18px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; transition:all .15s}
+  .pbtn:hover:not(:disabled){border-color:var(--steel); background:#fff}
+  .pbtn:disabled{opacity:.35; cursor:not-allowed}
+  .dots{display:flex; flex-wrap:wrap; gap:7px; justify-content:center; flex:1}
+  .dot{width:12px; height:12px; border-radius:50%; border:1.5px solid var(--muted); background:transparent;
+    cursor:pointer; padding:0; transition:all .15s}
+  .dot:hover{border-color:var(--navy)}
+  .dot[aria-current="true"]{background:var(--navy); border-color:var(--navy); transform:scale(1.15)}
+  .dot.sourced{border-color:var(--steel)}
+  .dot[aria-current="true"].sourced{background:var(--steel)}
+  .dot.dimmed{opacity:.22}
+  .dot.match{border-color:var(--red)}
+
+  .hint{text-align:center; font-size:11.5px; color:var(--muted); margin:6px 0 0}
+  .hint kbd{font-family:var(--body); background:var(--card); border:1px solid var(--hair); border-radius:4px; padding:1px 6px; font-size:11px}
+
+  /* footer */
+  footer{margin:56px 0 44px; border-top:1.5px solid var(--navy); padding-top:22px}
+  footer h3{font-size:12px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--navy); margin:0 0 14px}
+  .prov{max-width:820px; font-size:13.5px; color:var(--ink-2); margin:0 0 22px}
+  .prov b{color:var(--navy)}
+  .sources{list-style:none; margin:0 0 24px; padding:0; max-width:860px}
+  .sources li{font-size:12.5px; line-height:1.5; color:var(--muted); padding:9px 0; border-top:1px solid var(--line)}
+  .sources li:first-child{border-top:none}
+  .sources b{color:var(--ink-2); font-weight:700}
+  .footmeta{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; font-size:10.5px;
+    letter-spacing:.13em; text-transform:uppercase; color:var(--muted); font-weight:700}
+
+  /* tooltip */
+  .tip{position:fixed; z-index:60; pointer-events:none; opacity:0; transition:opacity .12s;
+    background:var(--navy); color:#fff; font-size:12.5px; line-height:1.4; padding:10px 12px; border-radius:7px;
+    max-width:250px; box-shadow:0 8px 26px rgba(27,42,74,0.28)}
+  .tip .tt{font-weight:800; margin-bottom:3px; display:flex; align-items:center; gap:7px}
+  .tip .tt .yr{font-variant-numeric:tabular-nums; color:#b9c4da}
+  .tip .tt.pc .yr{color:#ffb3ba}
+  .tip .tw{color:#dfe4ee}
+
+  @media (max-width:640px){
+    body{font-size:15px}
+    .stage{padding:20px 16px}
+    .takeaway{font-size:17px}
+    .casemeta .badge{margin-left:0}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .curve, .evt circle{transition:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <span class="brand">Parallax</span>
+    <span class="lbl">Investor Briefing</span>
+    <span class="conf">Confidential</span>
+  </div>
+
+  <div class="hero">
+    <div class="kick lbl">The pattern behind every position we hold</div>
+    <h1>The&nbsp;Stonecutter</h1>
+    <blockquote class="quote">
+      “When nothing seems to help, I go and look at a stonecutter hammering away at his rock perhaps a
+      hundred times without as much as a crack showing in it. Yet at the hundred and first blow it will
+      split in two — and I know it was not that blow that did it, but all that had gone before.”
+      <span class="attr">Jacob Riis</span>
+    </blockquote>
+    <p class="intro">Twelve precedents where <b>decades of illegible, compounding investment preceded a
+    sudden phase change</b>. On each chart, visible progress stays flat while accumulated investment
+    compounds — the shaded wedge between them is value being built that nobody can see yet. Then, at the
+    inflection, the two converge. <b>Pick the objection in the room</b> and the matching precedent answers it.</p>
+  </div>
+
+  <div class="filterbar">
+    <div class="cap lbl">Answer the objection</div>
+    <div class="chips" id="chips" role="group" aria-label="Filter by investor objection"></div>
+  </div>
+
+  <main class="stage" id="stage" aria-live="polite"></main>
+
+  <div class="pager">
+    <button class="pbtn" id="prev" aria-label="Previous case">‹</button>
+    <div class="dots" id="dots" role="tablist" aria-label="Cases"></div>
+    <button class="pbtn" id="next" aria-label="Next case">›</button>
+  </div>
+  <p class="hint">Use <kbd>←</kbd> <kbd>→</kbd> to move through the twelve · hover an event dot for the detail</p>
+
+  <footer>
+    <h3>On the data</h3>
+    <p class="prov"><b>Six of the twelve cases carry real, sourced figures</b> (marked ◆): deep learning,
+    the transformer→ChatGPT arc, the World Wide Web, marriage equality, Amazon, and Tesla. Real numbers
+    live in the event markers and the “real numbers” callout — never painted onto the plotted curves,
+    which are a shared 0–100 qualitative index whose job is to render the <i>shape</i> of the dynamic so
+    all twelve stay comparable. The one exception is marriage-equality polling, which is natively 0–100.
+    The remaining six cases are <b>illustrative</b> — drawn to the same compounding-then-inflection shape
+    and never given invented numbers. Every case carries a survivorship caveat by design: these are the
+    rocks that split; others were struck exactly as hard and never cracked.</p>
+    <h3>Sources</h3>
+    <ul class="sources">
+      <li><b>Deep learning</b> — ImageNet / ILSVRC winning top-5 error rates, 2010–2015; Krizhevsky, Sutskever &amp; Hinton, 2012.</li>
+      <li><b>Transformer → ChatGPT</b> — Vaswani et al., “Attention Is All You Need,” 2017; Brown et al. (GPT-3, 175B params), 2020; ChatGPT ~100M monthly users in ~60 days, UBS / Reuters, Feb 2023.</li>
+      <li><b>World Wide Web</b> — website counts via Internet Live Stats / NetCraft; mid-1994 survey by M. Gray (MIT); CERN, first website Aug 1991.</li>
+      <li><b>Marriage equality</b> — Gallup Values &amp; Beliefs poll, annual series 1996–2015.</li>
+      <li><b>Amazon</b> — Amazon annual reports / SEC filings, 1997–2015.</li>
+      <li><b>Tesla</b> — Tesla shareholder letters / SEC 8-K filings, 2012–2020.</li>
+    </ul>
+    <div class="footmeta">
+      <span>Parallax · Investor Briefing</span>
+      <span>Confidential — not for distribution</span>
+    </div>
+  </footer>
+
+</div>
+<div class="tip" id="tip" role="status"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var OBJECTIONS = [
+    {tag:"why-now",     label:"Why now?"},
+    {tag:"no-returns",  label:"No near-term returns"},
+    {tag:"opinion",     label:"Opinion isn’t there"},
+    {tag:"entrenched",  label:"System’s too entrenched"},
+    {tag:"timeline",    label:"Timeline’s too long"},
+    {tag:"generational",label:"Too generational"}
+  ];
+
+  // vis/inv are a shared 0–100 QUALITATIVE index (shape only). Real numbers live in events[].why + dataNote.
+  var CASES = [
+    { id:"deep-learning", tier:"Technology", domain:"Artificial intelligence", sourced:true, objTag:"why-now",
+      title:"Deep learning", inflectionYear:2012,
+      headline:"Twenty-five years of “dead” research — then computer vision fell in <em>three</em>.",
+      takeaway:"The compute and data that made 2012 possible were funded by people who held a thesis straight through an AI winter that made them look foolish.",
+      dataNote:"ILSVRC top-5 error: 28.2% (2010) → 25.8% (2011) → 15.3% (AlexNet, 2012) → 3.6% (2015). Human benchmark ≈ 5.1%, first beaten in 2015.",
+      caveat:"Neural nets won, but symbolic AI and countless rival labs were funded just as long and never broke through. The pattern is obvious only in hindsight.",
+      events:[
+        [1986,"Backprop","Rumelhart, Hinton & Williams popularise backpropagation; neural nets stay a backwater for 25 years.",false],
+        [2006,"Deep belief nets","Hinton shows deep networks can be trained layer-by-layer — still fringe.",false],
+        [2012,"AlexNet","ImageNet top-5 error collapses 25.8% → 15.3% in a single year. The rock splits.",true],
+        [2015,"Superhuman","ResNet reaches 3.6% top-5 error — past the ~5.1% human benchmark.",false]
+      ]},
+
+    { id:"transformer", tier:"Technology", domain:"Generative AI", sourced:true, objTag:"no-returns",
+      title:"Transformer → ChatGPT", inflectionYear:2022,
+      headline:"Five years of papers nobody could buy — then the <em>fastest product in history</em>.",
+      takeaway:"Every dollar of the 2017–2022 research overhang looked like pure cost until the 2022 inflection repriced all of it at once.",
+      dataNote:"Transformer paper 2017 → GPT-3 (175B parameters, 499B training tokens, 2020) → ChatGPT (Nov 30, 2022), ~100M monthly users in ~60 days. Instagram took ~2.5 years and TikTok ~9 months to reach 100M.",
+      caveat:"Transformers scaled; a graveyard of equally-funded architectures did not. And ChatGPT’s ramp rode a decade of GPU, data and cloud build-out it never paid for.",
+      events:[
+        [2017,"Transformer","Google’s “Attention Is All You Need” — a new architecture with no product attached.",false],
+        [2018,"GPT-1 / BERT","117M-parameter GPT-1; a research curiosity.",false],
+        [2020,"GPT-3","175B parameters, trained on ~499B tokens. Impressive demos, no consumer product.",false],
+        [2022,"ChatGPT","Launched Nov 30; ~100M monthly users in ~60 days — the fastest consumer ramp UBS had tracked in 20 years.",true]
+      ]},
+
+    { id:"web", tier:"Technology", domain:"Networking", sourced:true, objTag:"timeline",
+      title:"The World Wide Web", inflectionYear:1994,
+      headline:"A quarter-century of plumbing before the <em>first page loaded</em>.",
+      takeaway:"The Web was an overnight success sitting on 25 years of unglamorous, publicly-funded network research that returned nothing for decades.",
+      dataNote:"Websites: 1 (Aug 1991) → 623 (end 1993) → 2,738 (mid-1994) → 23,500 (1995) → 1 billion (Sept 2014). Roughly 25 years of packet-switching research preceded the very first site.",
+      caveat:"TCP/IP beat OSI, Minitel and a dozen rival network stacks that had real funding and institutional backing. Standards wars have losers.",
+      events:[
+        [1969,"ARPANET","First packet-switched links — a defence research project.",false],
+        [1983,"TCP/IP","ARPANET switches to TCP/IP; the internet’s addressing is set — still academic.",false],
+        [1991,"First website","Berners-Lee publishes info.cern.ch. Exactly one website exists on Earth.",false],
+        [1994,"Mosaic → mass web","623 sites (1993) → 2,738 (mid-1994) → 23,500 (1995): the browser makes it usable and it compounds.",true],
+        [2014,"One billion","NetCraft confirms the web has passed one billion sites.",false]
+      ]},
+
+    { id:"marriage", tier:"Movements & Law", domain:"Public opinion", sourced:true, objTag:"opinion",
+      title:"Marriage equality", inflectionYear:2011,
+      headline:"“The public isn’t there” — <em>until, suddenly, it was</em>.",
+      takeaway:"Opinion looked immovable for a decade while legal scaffolding and organising compounded underneath it — then it moved twenty points in ten years.",
+      dataNote:"Gallup support: 27% (1996) → 42% (2004) → 53% (2011, first majority) → 60% (2015, pre-Obergefell). Note the 2009 dip to 40% — the middle is not a straight line.",
+      caveat:"A generational shift, not a product — and many equally-organised campaigns on other issues stalled for decades. Do not read one win as a law of nature.",
+      // marriage-equality vis is REAL Gallup polling — natively 0–100, the one allowed real-on-curve series
+      visReal:[[1996,27],[1999,35],[2004,42],[2007,46],[2009,40],[2011,53],[2013,54],[2015,60]],
+      events:[
+        [1996,"DOMA","Defense of Marriage Act signed; 27% public support.",false],
+        [2004,"Massachusetts","First U.S. state to allow same-sex marriage; support ~42%.",false],
+        [2011,"Majority","Gallup support crosses 50% for the first time (53%).",true],
+        [2015,"Obergefell","Nationwide right recognised; support at 60%.",false]
+      ]},
+
+    { id:"suffrage", tier:"Movements & Law", domain:"Civil society", sourced:false, objTag:"generational",
+      title:"Women’s suffrage", inflectionYear:1920,
+      headline:"Seventy-two years from “radical” to <em>ratified</em>.",
+      takeaway:"Three generations of organisers funded a result none of the founders lived to see. The early capital bought the conditions, not the outcome.",
+      caveat:"Illustrative, not sourced to a single annual metric. Many parallel 19th-century movements organised as hard and won nothing. Duration alone guarantees nothing.",
+      events:[
+        [1848,"Seneca Falls","First women’s-rights convention; the demand is dismissed as radical.",false],
+        [1878,"Amendment introduced","A suffrage amendment first reaches Congress — then fails, reintroduced, for 40+ years.",false],
+        [1893,"New Zealand","First self-governing nation to grant women the vote; global pressure builds.",false],
+        [1920,"19th Amendment","Ratified — 72 years after Seneca Falls.",true]
+      ]},
+
+    { id:"civil-rights", tier:"Movements & Law", domain:"Civil society", sourced:false, objTag:"entrenched",
+      title:"Civil-rights scaffolding", inflectionYear:1964,
+      headline:"Half a century of legal scaffolding before the <em>statute</em>.",
+      takeaway:"The 1954–1965 breakthroughs rested on decades of deliberate institution-building that produced no “return” in real time.",
+      caveat:"Illustrative — and the transferable claim is strictly structural (scaffolding precedes breakthrough), NOT any equivalence between a justice movement and a financial return. Held only as an example of the shape.",
+      events:[
+        [1896,"Plessy v. Ferguson","“Separate but equal” entrenched in law.",false],
+        [1909,"NAACP founded","A patient legal strategy begins its decades-long build.",false],
+        [1954,"Brown v. Board","Segregated schooling ruled unconstitutional — the crack.",false],
+        [1964,"Civil Rights Act","Landmark legislation, after decades of litigation and organising.",true]
+      ]},
+
+    { id:"mrna", tier:"Science", domain:"Biotechnology", sourced:false, objTag:"timeline",
+      title:"mRNA vaccines", inflectionYear:2020,
+      headline:"Thirty years of “promising, unfunded” — then <em>billions of doses in one</em>.",
+      takeaway:"Katalin Karikó was demoted for pursuing mRNA. The 2020 inflection repriced three decades of work the field had written off.",
+      caveat:"Illustrative — no single clean annual metric, so it is shown as dates, not a plotted series. Many equally-promising platforms never reached the clinic.",
+      events:[
+        [1990,"Expressed in vivo","Early proof that injected mRNA can direct protein production; funding is scarce.",false],
+        [2005,"Karikó–Weissman","Modified nucleosides solve the inflammation problem — a landmark paper, largely ignored.",false],
+        [2010,"Moderna / BioNTech","Companies founded on a technology with zero approved products.",false],
+        [2020,"COVID-19 vaccines","First mRNA vaccines authorised (Dec 2020); billions of doses within a year.",true]
+      ]},
+
+    { id:"germ-theory", tier:"Science", domain:"Medicine", sourced:false, objTag:"opinion",
+      title:"Germ theory", inflectionYear:1885,
+      headline:"That washing hands saves lives took <em>forty years to be believed</em>.",
+      takeaway:"The evidence existed decades before the consensus moved. The bottleneck was never the science — it was conviction against a settled establishment.",
+      caveat:"Illustrative. For every Semmelweis eventually vindicated, many outsider theories were rejected and stayed wrong. “They laughed at Galileo” is not, by itself, evidence.",
+      events:[
+        [1847,"Semmelweis","Handwashing slashes maternal deaths; he is ridiculed and dies in an asylum.",false],
+        [1861,"Pasteur","Germ-theory experiments mount; the establishment resists.",false],
+        [1876,"Koch","Koch’s postulates tie specific microbes to specific disease.",false],
+        [1885,"Acceptance","Germ theory goes mainstream; antisepsis transforms surgery.",true]
+      ]},
+
+    { id:"gps", tier:"Science", domain:"Public infrastructure", sourced:false, objTag:"why-now",
+      title:"GPS", inflectionYear:2000,
+      headline:"A 1970s defence program that quietly became <em>the map in your pocket</em>.",
+      takeaway:"Twenty-seven years of military R&D built the infrastructure; the consumer inflection came only when the switch was flipped in 2000.",
+      caveat:"Illustrative, no single annual metric. Public infrastructure with a clear owner — and not every government megaproject compounds into a civilian platform.",
+      events:[
+        [1973,"Program approved","The U.S. satellite-navigation program begins.",false],
+        [1978,"First satellite","First GPS satellite launched — purely military.",false],
+        [1995,"Full constellation","24 satellites operational; civilian use limited and deliberately degraded.",false],
+        [2000,"Selective Availability off","Civilian accuracy jumps ~10×; the platform opens.",true],
+        [2008,"Smartphones","GPS in every pocket; a location economy compounds on top.",false]
+      ]},
+
+    { id:"amazon", tier:"Markets", domain:"Public equities", sourced:true, objTag:"no-returns",
+      title:"Amazon", inflectionYear:2015,
+      headline:"Six years to a dollar of profit; eighteen to <em>$107 billion</em>.",
+      takeaway:"Amazon spent two decades converting reported losses into infrastructure. Investors who needed near-term earnings sold; those who understood the reinvestment held the compounder.",
+      dataNote:"Revenue $148M (1997) → $107B (2015). A $1.4B record loss (2000); first full-year profit $35M (2003); AWS the margin engine by ~2015.",
+      caveat:"The dot-com boom funded hundreds of “next Amazons” on the same story. Almost all died. The thesis is vindicated only by the survivor.",
+      events:[
+        [1997,"IPO","Revenue $148M, widening losses — the press calls it “Amazon.bomb.”",false],
+        [2000,"Record loss","A $1.4B net loss at the dot-com trough.",false],
+        [2003,"First profit","First full-year net income: $35M — six years after IPO.",false],
+        [2015,"$107B + AWS","Revenue $107B, net income $596M; AWS emerges as the profit engine.",true]
+      ]},
+
+    { id:"tesla", tier:"Markets", domain:"Public equities", sourced:true, objTag:"entrenched",
+      title:"Tesla", inflectionYear:2020,
+      headline:"Eight years, two near-bankruptcies — then the <em>incumbents were behind</em>.",
+      takeaway:"The market priced Tesla as a doomed niche while it built a manufacturing base an entrenched industry couldn’t match. The re-rating came all at once.",
+      dataNote:"Deliveries ~2,650 (2012) → 50,580 (2015) → 245,240 (2018) → 499,550 (2020). First full-year GAAP profit in 2020 ($721M) — eight years after the Model S.",
+      caveat:"Tesla nearly ran out of cash in 2008 and again in 2013. Fisker, Better Place and others took the same bet and failed. Vertical-in-hindsight was a coin-flip live.",
+      events:[
+        [2012,"Model S","~2,650 deliveries; legacy automakers dismiss EVs.",false],
+        [2015,"50,580","Deliveries scale; still deeply unprofitable and doubted.",false],
+        [2018,"Model 3 ramp","245,240 deliveries; “production hell” nearly breaks the company.",false],
+        [2020,"First profit","499,550 deliveries; first full-year GAAP profit ($721M).",true]
+      ]},
+
+    { id:"spacex", tier:"Markets", domain:"Venture", sourced:false, objTag:"no-returns",
+      title:"Reusable rockets", inflectionYear:2015,
+      headline:"Three failures from bankruptcy — then rockets that <em>land</em>.",
+      takeaway:"A decade of cash-burning R&D that looked like vanity spending built a cost structure no competitor could touch.",
+      caveat:"Illustrative. Reusable-launch startups had failed for decades; SpaceX is the survivor of its own near-death. Do not generalise from one winner.",
+      events:[
+        [2002,"Founded","SpaceX starts; reusable orbital rockets are widely called impossible.",false],
+        [2008,"Falcon 1","A fourth attempt reaches orbit after three failures nearly end the company.",false],
+        [2015,"First landing","A Falcon 9 booster lands vertically — the crack.",true],
+        [2017,"Re-flight","A used booster re-flies; marginal launch cost collapses.",false]
+      ]}
+  ];
+  CASES.forEach(function(c,i){ c.num=i+1; });
+
+  // ---- shape model: qualitative 0–100 curves from start/inflection/end ----
+  function build(c){
+    if(c._b) return c._b;
+    var evYears = c.events.map(function(e){return e[0];});
+    var start = Math.min.apply(null, evYears);
+    var lastEv = Math.max.apply(null, evYears);
+    var infl = c.inflectionYear;
+    var tail = Math.max(2, Math.ceil(0.18*(infl-start)));
+    var end = Math.max(lastEv, infl + tail);
+    var tInfl = (infl-start)/(end-start);
+    var N=64, invPts=[], visPts=[];
+    for(var i=0;i<=N;i++){
+      var t=i/N, year=start+t*(end-start);
+      var inv=100*Math.pow(t,1.25);
+      var vis=100/(1+Math.exp(-22*(t-tInfl)));
+      invPts.push([year,inv]); visPts.push([year,vis]);
+    }
+    if(c.visReal){ // real, natively-0–100 series overrides the qualitative vis
+      visPts = c.visReal.slice();
+    }
+    c._b={start:start,end:end,infl:infl,tInfl:tInfl,invPts:invPts,visPts:visPts};
+    return c._b;
+  }
+  function visAt(c,year){
+    var b=build(c);
+    if(c.visReal){
+      var a=c.visReal, i;
+      if(year<=a[0][0]) return a[0][1];
+      if(year>=a[a.length-1][0]) return a[a.length-1][1];
+      for(i=0;i<a.length-1;i++){ if(year>=a[i][0]&&year<=a[i+1][0]){
+        var f=(year-a[i][0])/(a[i+1][0]-a[i][0]); return a[i][1]+f*(a[i+1][1]-a[i][1]);
+      }}
+      return a[a.length-1][1];
+    }
+    var t=(year-b.start)/(b.end-b.start);
+    return 100/(1+Math.exp(-22*(t-b.tInfl)));
+  }
+
+  var W=760,H=372,pad={l:20,r:26,t:26,b:46};
+  var plotW=W-pad.l-pad.r, plotH=H-pad.t-pad.b;
+  function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+  function chartSVG(c){
+    var b=build(c);
+    var x=function(y){return pad.l+(y-b.start)/(b.end-b.start)*plotW;};
+    var yy=function(v){return pad.t+(1-v/100)*plotH;};
+    function line(pts){return pts.map(function(p,i){return (i?"L":"M")+x(p[0]).toFixed(1)+" "+yy(p[1]).toFixed(1);}).join(" ");}
+
+    // wedge = area between inv (top) and vis (bottom)
+    var invD=line(b.invPts);
+    var visForward=b.visPts.slice();
+    // build wedge polygon on the shared sample grid; use invPts grid & visAt for alignment
+    var top=b.invPts, wedge="M"+x(top[0][0]).toFixed(1)+" "+yy(top[0][1]).toFixed(1);
+    for(var i=1;i<top.length;i++) wedge+=" L"+x(top[i][0]).toFixed(1)+" "+yy(top[i][1]).toFixed(1);
+    for(var j=top.length-1;j>=0;j--){ var yr=top[j][0]; wedge+=" L"+x(yr).toFixed(1)+" "+yy(visAt(c,yr)).toFixed(1); }
+    wedge+=" Z";
+
+    var s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(c.title)+': accumulated investment compounds while visible progress stays flat, converging at the '+b.infl+' phase change.">';
+
+    // gridlines 0/50/100
+    [0,50,100].forEach(function(g){ var gy=yy(g);
+      s+='<line class="axgrid" x1="'+pad.l+'" y1="'+gy.toFixed(1)+'" x2="'+(pad.l+plotW)+'" y2="'+gy.toFixed(1)+'"/>';
+    });
+    // baseline + axis title
+    s+='<line class="axline" x1="'+pad.l+'" y1="'+(pad.t+plotH)+'" x2="'+(pad.l+plotW)+'" y2="'+(pad.t+plotH)+'"/>';
+    s+='<text class="axtitle" x="'+pad.l+'" y="'+(pad.t-10)+'">progress / investment index — qualitative (0–100)</text>';
+
+    // wedge
+    s+='<path class="wedgefill" d="'+wedge+'"/>';
+    // wedge label at ~40% across
+    var wlx=x(b.start+0.42*(b.end-b.start));
+    var wtop=100*Math.pow(0.42,1.25), wbot=visAt(c,b.start+0.42*(b.end-b.start));
+    var wly=yy((wtop+wbot)/2);
+    s+='<text class="wedgelbl" x="'+wlx.toFixed(1)+'" y="'+wly.toFixed(1)+'" text-anchor="middle">the illegible middle</text>';
+
+    // phase-change rule + vertical label riding the dashed line (avoids the top-right curve labels)
+    var pcx=x(b.infl);
+    s+='<line class="pcline" x1="'+pcx.toFixed(1)+'" y1="'+pad.t+'" x2="'+pcx.toFixed(1)+'" y2="'+(pad.t+plotH)+'"/>';
+    var plx=(pcx-7).toFixed(1), ply=(pad.t+plotH-10).toFixed(1);
+    s+='<text class="pctxt" transform="rotate(-90 '+plx+' '+ply+')" x="'+plx+'" y="'+ply+'" text-anchor="start">phase change ›</text>';
+
+    // curves (data-len filled after insert for draw-on)
+    s+='<path class="curve inv" d="'+invD+'"/>';
+    s+='<path class="curve vis" d="'+line(b.visPts)+'"/>';
+
+    // curve end labels
+    var invLast=b.invPts[b.invPts.length-1], visLast=b.visPts[b.visPts.length-1];
+    s+='<text class="curvelbl inv" x="'+(x(invLast[0])-4).toFixed(1)+'" y="'+(yy(invLast[1])-8).toFixed(1)+'" text-anchor="end">Accumulated investment</text>';
+    s+='<text class="curvelbl vis" x="'+(x(visLast[0])-4).toFixed(1)+'" y="'+(yy(visLast[1])+16).toFixed(1)+'" text-anchor="end">Visible progress</text>';
+
+    // x ticks: start, inflection, end
+    [[b.start,"start"],[b.infl,""],[b.end,""]].forEach(function(t){
+      var tx=x(t[0]);
+      s+='<text class="axtxt" x="'+tx.toFixed(1)+'" y="'+(pad.t+plotH+18)+'" text-anchor="middle">'+t[0]+'</text>';
+    });
+
+    // event dots on the visible-progress curve
+    c.events.forEach(function(e,idx){
+      var yr=e[0], ex=x(yr), ey=yy(visAt(c,yr)), pc=e[3];
+      s+='<g class="evt" tabindex="0" role="button" data-idx="'+idx+'" aria-label="'+esc(yr+": "+e[1]+". "+e[2])+'">';
+      s+='<circle class="hit" cx="'+ex.toFixed(1)+'" cy="'+ey.toFixed(1)+'" r="15"/>';
+      s+='<circle class="dot" cx="'+ex.toFixed(1)+'" cy="'+ey.toFixed(1)+'" r="'+(pc?6.5:5)+'" fill="'+(pc?'#E63946':'#1B2A4A')+'"/>';
+      s+='</g>';
+    });
+
+    s+='</svg>';
+    return s;
+  }
+
+  // ---- state + render ----
+  var idx=0, activeObj=null;
+  var stage=document.getElementById("stage");
+  var dotsEl=document.getElementById("dots");
+  var chipsEl=document.getElementById("chips");
+  var tip=document.getElementById("tip");
+  var prefersReduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function matches(c){ return !activeObj || c.objTag===activeObj; }
+
+  function render(){
+    var c=CASES[idx];
+    var badge = c.sourced ? '<span class="badge"><span class="d">◆</span> Real data</span>' : '';
+    var data = c.sourced && c.dataNote
+      ? '<div class="datanote"><div class="k"><span class="d">◆</span> The real numbers</div><p>'+esc(c.dataNote)+'</p></div>' : '';
+    stage.innerHTML =
+      '<div class="casemeta">'+
+        '<span class="tierpill" data-tier="'+esc(c.tier)+'">'+esc(c.tier)+'</span>'+
+        '<span class="dom">'+esc(c.domain)+'</span>'+
+        '<span class="cnt">'+c.num+' / 12</span>'+
+        badge+
+      '</div>'+
+      '<h2 class="title">'+esc(c.title)+'</h2>'+
+      '<p class="headline">'+c.headline+'</p>'+
+      '<div class="chartbox">'+chartSVG(c)+'</div>'+
+      '<div class="legend">'+
+        '<span class="lg"><span class="sw" style="background:var(--steel)"></span>Accumulated investment</span>'+
+        '<span class="lg"><span class="sw" style="background:var(--navy)"></span>Visible progress</span>'+
+        '<span class="lg"><span class="sw box"></span>Value built, still invisible</span>'+
+        '<span class="lg"><span class="sw dash"></span>Phase change</span>'+
+      '</div>'+
+      '<p class="takeaway">'+esc(c.takeaway)+'</p>'+
+      data+
+      '<div class="caveat"><span class="k">Survivorship</span><span>'+esc(c.caveat)+'</span></div>';
+
+    // pager dots
+    buildDots();
+    document.getElementById("prev").disabled = idx===0;
+    document.getElementById("next").disabled = idx===CASES.length-1;
+
+    wireEvents(c);
+    animateCurves();
+  }
+
+  function buildDots(){
+    dotsEl.innerHTML="";
+    CASES.forEach(function(c,i){
+      var d=document.createElement("button");
+      d.className="dot"+(c.sourced?" sourced":"")+(activeObj&&matches(c)?" match":"")+(activeObj&&!matches(c)?" dimmed":"");
+      d.setAttribute("role","tab");
+      d.setAttribute("aria-label", c.num+". "+c.title);
+      if(i===idx) d.setAttribute("aria-current","true");
+      d.addEventListener("click",function(){ idx=i; render(); });
+      dotsEl.appendChild(d);
+    });
+  }
+
+  function wireEvents(c){
+    var evs=stage.querySelectorAll(".evt");
+    evs.forEach(function(g){
+      var e=c.events[+g.getAttribute("data-idx")];
+      function show(ev){
+        var r=(g.querySelector(".dot")).getBoundingClientRect();
+        var cx=r.left+r.width/2, cy=r.top+r.height/2;
+        tip.innerHTML='<div class="tt'+(e[3]?' pc':'')+'"><span>'+esc(e[1])+'</span><span class="yr">'+e[0]+'</span></div><div class="tw">'+esc(e[2])+'</div>';
+        tip.style.opacity="1";
+        var w=tip.offsetWidth,h=tip.offsetHeight;
+        var nx=cx-w/2, ny=cy-h-14;
+        if(nx<8)nx=8; if(nx+w>window.innerWidth-8)nx=window.innerWidth-8-w;
+        if(ny<8)ny=cy+18;
+        tip.style.left=nx+"px"; tip.style.top=ny+"px";
+      }
+      function hide(){ tip.style.opacity="0"; }
+      g.addEventListener("mouseenter",show);
+      g.addEventListener("mousemove",show);
+      g.addEventListener("mouseleave",hide);
+      g.addEventListener("focus",show);
+      g.addEventListener("blur",hide);
+    });
+  }
+
+  function animateCurves(){
+    if(prefersReduced) return;
+    ["inv","vis"].forEach(function(cls,k){
+      var p=stage.querySelector(".curve."+cls);
+      if(!p||!p.getTotalLength) return;
+      var len=p.getTotalLength();
+      p.style.transition="none";
+      p.style.strokeDasharray=len+" "+len;
+      p.style.strokeDashoffset=len;
+      // force reflow
+      p.getBoundingClientRect();
+      p.style.transition="stroke-dashoffset 1.05s cubic-bezier(.4,.05,.2,1) "+(k*0.12)+"s";
+      p.style.strokeDashoffset="0";
+    });
+    var dots=stage.querySelectorAll(".evt .dot");
+    dots.forEach(function(d,i){
+      d.style.opacity="0";
+      d.style.transition="none";
+      d.getBoundingClientRect();
+      d.style.transition="opacity .3s ease "+(0.5+i*0.12)+"s";
+      d.style.opacity="1";
+    });
+  }
+
+  // chips
+  OBJECTIONS.forEach(function(o){
+    var count=CASES.filter(function(c){return c.objTag===o.tag;}).length;
+    var b=document.createElement("button");
+    b.className="chip"; b.setAttribute("aria-pressed","false");
+    b.setAttribute("data-tag",o.tag);
+    b.innerHTML=o.label+'<span class="ct">'+count+'</span>';
+    b.addEventListener("click",function(){
+      if(activeObj===o.tag){ activeObj=null; }
+      else { activeObj=o.tag; var first=CASES.findIndex(function(c){return c.objTag===o.tag;}); if(first>=0) idx=first; }
+      syncChips(); render();
+    });
+    chipsEl.appendChild(b);
+  });
+  function syncChips(){
+    chipsEl.querySelectorAll(".chip").forEach(function(b){
+      b.setAttribute("aria-pressed", b.getAttribute("data-tag")===activeObj ? "true":"false");
+    });
+  }
+
+  document.getElementById("prev").addEventListener("click",function(){ if(idx>0){idx--; render();} });
+  document.getElementById("next").addEventListener("click",function(){ if(idx<CASES.length-1){idx++; render();} });
+  document.addEventListener("keydown",function(e){
+    if(e.target.tagName==="BUTTON"&&(e.key==="Enter"||e.key===" ")) return;
+    if(e.key==="ArrowLeft"&&idx>0){idx--; render();}
+    else if(e.key==="ArrowRight"&&idx<CASES.length-1){idx++; render();}
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
